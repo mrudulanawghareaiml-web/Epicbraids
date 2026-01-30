@@ -1,3 +1,58 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A close-up of hands weaving a colorful friendship bracelet.",
+      "imageUrl": "https://images.unsplash.com/photo-1606681246653-74521ac452f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYW5kcyUyMHdlYXZpbmd8ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hands weaving"
+    },
+    {
+      "id": "bracelet-1",
+      "description": "A vibrant chevron-patterned friendship bracelet.",
+      "imageUrl": "https://images.unsplash.com/photo-1693473851032-36335b5a1335?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmcmllbmRzaGlwJTIwYnJhY2VsZXR8ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "friendship bracelet"
+    },
+    {
+      "id": "bracelet-2",
+      "description": "A minimalist bracelet with a single gold bead.",
+      "imageUrl": "https://images.unsplash.com/photo-1748017554732-025f961fcd60?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtaW5pbWFsaXN0JTIwYnJhY2VsZXR8ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist bracelet"
+    },
+    {
+      "id": "bracelet-3",
+      "description": "A stack of colorful, braided bracelets on a wrist.",
+      "imageUrl": "https://images.unsplash.com/photo-1762528748269-01d60be6cf49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzdGFja2VkJTIwYnJhY2VsZXRzfGVufDB8fHx8MTc2OTc1ODM4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stacked bracelets"
+    },
+    {
+      "id": "bracelet-4",
+      "description": "A nautical-themed bracelet with an anchor charm.",
+      "imageUrl": "https://images.unsplash.com/photo-1767009951316-c3d2b63179ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuYXV0aWNhbCUyMGJyYWNlbGV0fGVufDB8fHx8MTc2OTc1ODM4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "nautical bracelet"
+    },
+    {
+      "id": "bracelet-5",
+      "description": "A black and white patterned bracelet.",
+      "imageUrl": "https://images.unsplash.com/photo-1759873911586-2076535ca5c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bW9ub2Nocm9tZSUyMGJyYWNlbGV0fGVufDB8fHx8MTc2OTc1ODM4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "monochrome bracelet"
+    },
+    {
+      "id": "keychain-1",
+      "description": "A colorful braided keychain with a tassel.",
+      "imageUrl": "https://images.unsplash.com/photo-1678929482378-a9c5f99b8e4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxicmFpZGVkJTIwa2V5Y2hhaW58ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "braided keychain"
+    },
+    {
+      "id": "keychain-2",
+      "description": "A keychain with wooden beads and a short braid.",
+      "imageUrl": "https://images.unsplash.com/photo-1762487991250-70479ac684fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWFkZWQlMjBrZXljaGFpbnxlbnwwfHx8fDE3Njk3NTgzODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "beaded keychain"
+    },
+    {
+      "id": "keychain-3",
+      "description": "A long, multi-colored keychain designed to be a lanyard.",
+      "imageUrl": "https://images.unsplash.com/photo-1685884626572-aff35bbbefce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxrZXljaGFpbiUyMGxhbnlhcmR8ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "keychain lanyard"
+    }
+  ]
 }
