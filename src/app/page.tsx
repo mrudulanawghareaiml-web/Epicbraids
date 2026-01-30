@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product-card';
 import { getFeaturedProducts } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Sparkles } from 'lucide-react';
 
 export default function Home() {
   const featuredProducts = getFeaturedProducts(4);
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-1');
+  const aboutImage = PlaceHolderImages.find(p => p.id === 'about-us');
 
   return (
     <div className="flex flex-col">
@@ -56,30 +56,25 @@ export default function Home() {
 
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <div className="bg-card rounded-lg shadow-lg overflow-hidden lg:grid lg:grid-cols-2 lg:items-center">
-            <div className="p-8 md:p-12 lg:p-16">
-              <h2 className="text-3xl md:text-4xl font-headline mb-4">
-                Find Your Perfect Style
-              </h2>
-              <p className="text-muted-foreground text-lg mb-6">
-                Not sure where to start? Let our AI-powered Style Advisor generate a unique bracelet design based on your favorite colors.
-              </p>
-              <Button asChild size="lg">
-                <Link href="/recommendations">
-                  <Sparkles className="mr-2" />
-                  Try The AI Advisor
-                </Link>
-              </Button>
-            </div>
-            <div className="h-64 lg:h-full">
-              <Image
-                src="https://picsum.photos/seed/ai-style/600/500"
-                alt="AI generated bracelet design"
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
+            <div className="mb-8 lg:mb-0">
+              {aboutImage && <Image
+                src={aboutImage.imageUrl}
+                alt={aboutImage.description}
                 width={600}
                 height={500}
-                className="w-full h-full object-cover"
-                data-ai-hint="bracelet colors"
-              />
+                className="rounded-lg shadow-lg object-cover"
+                data-ai-hint={aboutImage.imageHint}
+              />}
+            </div>
+            <div className="text-center md:text-left">
+              <h2 className="text-3xl md:text-4xl font-headline mb-6">Our Story</h2>
+              <p className="text-muted-foreground mb-4">
+                Founded in a small workshop with a big heart, EpicBraids was born from a passion for creating beautiful, handcrafted items that tell a story. We believe that accessories are more than just an adornment; they are a form of self-expression, a reminder of a special moment, or a bond between friends.
+              </p>
+              <p className="text-muted-foreground">
+                Each bracelet and keychain is meticulously woven with high-quality materials, attention to detail, and a whole lot of love. Our mission is to bring a little piece of handcrafted joy into your life and to help you celebrate your own unique story.
+              </p>
             </div>
           </div>
         </div>

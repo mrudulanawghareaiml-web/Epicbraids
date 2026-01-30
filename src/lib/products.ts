@@ -81,10 +81,10 @@ export const getProductById = (id: string) => products.find(p => p.id === id);
 export const getFeaturedProducts = (count: number) => products.slice(0, count);
 
 export const braceletStyles = [
-  { id: 'chevron', name: 'Chevron', description: 'Classic V-shaped pattern.' },
-  { id: 'fishtail', name: 'Fishtail', description: 'A delicate, intricate weave.' },
-  { id: 'spiral', name: 'Spiral', description: 'A twisting, candy-cane pattern.' },
-  { id: 'solid', name: 'Solid Flat', description: 'A wide, solid-colored band.' },
+  { id: 'chevron', name: 'Chevron', description: 'Classic V-shaped pattern.', image: getImage('bracelet-1') },
+  { id: 'fishtail', name: 'Fishtail', description: 'A delicate, intricate weave.', image: getImage('bracelet-2') },
+  { id: 'spiral', name: 'Spiral', description: 'A twisting, candy-cane pattern.', image: getImage('bracelet-4') },
+  { id: 'solid', name: 'Solid Flat', description: 'A wide, solid-colored band.', image: getImage('bracelet-5') },
 ];
 
 export const availableColors = [

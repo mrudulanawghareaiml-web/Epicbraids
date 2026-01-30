@@ -7,6 +7,12 @@
       "imageHint": "hands weaving"
     },
     {
+      "id": "about-us",
+      "description": "Artisan's hands weaving a colorful braid on a small loom.",
+      "imageUrl": "https://images.unsplash.com/photo-1563483372895-34533c3755b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "artisan weaving"
+    },
+    {
       "id": "bracelet-1",
       "description": "A vibrant chevron-patterned friendship bracelet.",
       "imageUrl": "https://images.unsplash.com/photo-1693473851032-36335b5a1335?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmcmllbmRzaGlwJTIwYnJhY2VsZXR8ZW58MHx8fHwxNzY5NzU4Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",

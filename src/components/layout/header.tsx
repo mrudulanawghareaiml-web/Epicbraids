@@ -6,7 +6,6 @@ import { MobileNav } from './mobile-nav';
 const navItems = [
   { href: '/products', label: 'Products' },
   { href: '/customize', label: 'Customize' },
-  { href: '/recommendations', label: 'AI Advisor' },
 ];
 
 export function Header() {

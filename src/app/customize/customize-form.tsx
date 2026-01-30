@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,8 @@ export function CustomizeForm() {
             {braceletStyles.map(s => (
               <div key={s.id}>
                 <RadioGroupItem value={s.id} id={s.id} className="sr-only" />
-                <Label htmlFor={s.id} className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                <Label htmlFor={s.id} className="flex flex-col items-center justify-start rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer h-full">
+                  <Image src={s.image} alt={s.name} width={120} height={80} className="rounded-md object-cover mb-2" />
                   <span className="font-bold">{s.name}</span>
                   <span className="text-xs text-muted-foreground text-center mt-1">{s.description}</span>
                 </Label>
