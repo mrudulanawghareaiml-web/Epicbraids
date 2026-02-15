@@ -16,11 +16,16 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        body: ['PT Sans', 'sans-serif'],
-        headline: ['Belleza', 'sans-serif'],
-        code: ['monospace'],
-      },
+      // tailwind.config.ts - Inside the extend block
+fontFamily: {
+  // This links to the variable you defined in layout.tsx
+  body: ['var(--font-poppins)', 'sans-serif'],
+  headline: ['var(--font-poppins)', 'sans-serif'],
+  sans: ['var(--font-poppins)', 'sans-serif'], // Sets Poppins as the default sans font
+  code: ['monospace'],
+},
+
+
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
