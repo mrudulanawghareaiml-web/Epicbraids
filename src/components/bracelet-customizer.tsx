@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
 
 const PARACORD_COLORS = [
@@ -19,39 +19,38 @@ const PARACORD_COLORS = [
 
 export default function BraceletCustomizer({ selectedStyle }: { selectedStyle: any }) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addToCart } = useCart(); // FIX 1: Use standardized name
   
-  // Initialize with the first two colors from our list
   const [primaryColor, setPrimaryColor] = useState(PARACORD_COLORS[0]);
   const [accentColor, setAccentColor] = useState(PARACORD_COLORS[1]);
 
   const handleAddToCart = () => {
-    if (addItem) {
-      addItem({
-        ...selectedStyle,
-        id: `${selectedStyle.id}-${Date.now()}`,
-        customization: {
-          primary: primaryColor.name,
-          accent: accentColor.name,
-        }
-      });
-      router.push("/cart");
-    }
+    // FIX 2: Simplified check and matched property names
+    addToCart({
+      ...selectedStyle,
+      id: `${selectedStyle.id}-${Date.now()}`,
+      // Pass the first image as a string to match the CartItem interface
+      images: selectedStyle.images[0], 
+      customization: {
+        primary: primaryColor.name,
+        accent: accentColor.name,
+      }
+    });
+    router.push("/cart");
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-      
       {/* LEFT SIDE: PREVIEW */}
       <div className="space-y-6">
         <div className="aspect-square relative bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
           <Image
-            // FIX: Access the first image in the array [0]
             src={selectedStyle.images[0]} 
             alt={selectedStyle.name}
             fill
             className="object-cover"
             priority
+            unoptimized // Prevents the 500/timeout errors
           />
         </div>
         <div className="p-6 bg-gray-50 rounded-lg">
@@ -62,12 +61,10 @@ export default function BraceletCustomizer({ selectedStyle }: { selectedStyle: a
 
       {/* RIGHT SIDE: SELECTION */}
       <div className="space-y-12">
-        
         {/* PRIMARY COLOR */}
         <div>
           <div className="flex justify-between items-end mb-4">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.2em]">Primary Color</h3>
-            {/* FIX: Render the name string, not the whole object */}
             <span className="text-[10px] font-bold uppercase text-gray-400">{primaryColor.name}</span>
           </div>
           <div className="grid grid-cols-4 gap-3">

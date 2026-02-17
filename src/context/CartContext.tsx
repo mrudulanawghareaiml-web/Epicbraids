@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// 1. Standardized Interface Name
 export interface CartItem {
   id: string;
   name: string;
@@ -13,13 +14,12 @@ export interface CartItem {
   size?: string;
 }
 
+// 2. Updated Context Type to include clearCart
 interface CartContextType {
-  cartItems: CartItem[];
+  cartItems: CartItem[]; 
   addToCart: (product: any) => void;
   removeFromCart: (id: string) => void;
-  clearCart: () => void;
-  updateQuantity: (id: string, quantity: number) => void; // Added to interface
-  cartCount: number; // Added to interface
+  clearCart: () => void; // <--- ADDED THIS
   totalPrice: number;
 }
 
@@ -27,12 +27,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  // 1. Calculate derived cartCount
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-  // 2. Calculate derived totalPrice
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const addToCart = (product: any) => {
     setCartItems(prev => {
@@ -50,25 +44,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
-  // 3. Define updateQuantity function
-  const updateQuantity = (id: string, quantity: number) => {
-    setCartItems(prev => prev.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item
-    ));
+  // 3. Define the clearCart function logic
+  const clearCart = () => {
+    setCartItems([]);
   };
 
-  const clearCart = () => setCartItems([]);
+  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ 
-      cartItems, 
-      addToCart, 
-      removeFromCart, 
-      clearCart, 
-      updateQuantity, // Added to Provider value
-      cartCount,      // Added to Provider value
-      totalPrice 
-    }}>
+    // 4. Added clearCart to the Provider value
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, totalPrice }}>
       {children}
     </CartContext.Provider>
   );

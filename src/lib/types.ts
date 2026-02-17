@@ -4,7 +4,8 @@ export type Product = {
   description: string;
   price: number;
   images: string[];
-  category: 'Bracelets' | 'Keychains';
+  // CHANGE THIS: Change from 'Bracelets' | 'Keychains' to string
+  category: string; 
   materials?: string;
   sizing?: string[];
   colors?: string[];
@@ -16,10 +17,8 @@ export type CartItem = {
   price: number;
   quantity: number;
   image: string;
-  // For standard products
   productId?: string;
   size?: string;
-  // For custom products
   style?: string;
   colors?: string[];
 };

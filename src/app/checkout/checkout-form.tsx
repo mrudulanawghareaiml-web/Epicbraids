@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/cart-context';
+import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard } from 'lucide-react';
 
@@ -26,14 +26,14 @@ const formSchema = z.object({
   postalCode: z.string().min(4, 'Postal code is too short'),
   country: z.string().min(2, 'Country is too short'),
   cardName: z.string().min(2, 'Name on card is too short'),
-  cardNumber: z.string().regex(/^\d{16}$/, 'Invalid card number'),
+  cardNumber: z.string().regex(/^\d{16}$/, 'Invalid card number (16 digits)'),
   cardExpiry: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Invalid format (MM/YY)'),
   cardCvc: z.string().regex(/^\d{3,4}$/, 'Invalid CVC'),
 });
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { clearCart, cartItems } = useCart();
+  const { clearCart, cartItems } = useCart(); // clearCart now exists!
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,18 +53,29 @@ export function CheckoutForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log('Order placed:', { ...values, items: cartItems });
-    toast({
-        title: 'Order Placed!',
-        description: 'Thank you for your purchase. A confirmation has been sent to your email.'
-    })
-    clearCart();
-    router.push('/checkout/success');
+    try {
+      console.log('Order placed:', { ...values, items: cartItems });
+      
+      toast({
+          title: 'Order Placed!',
+          description: 'Thank you for your purchase. A confirmation has been sent to your email.'
+      });
+
+      clearCart(); // Clears the context and localStorage
+      router.push('/checkout/success');
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive'
+      });
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Contact Info */}
         <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact Information</h3>
             <FormField
@@ -82,6 +93,7 @@ export function CheckoutForm() {
             />
         </div>
 
+        {/* Shipping Address */}
         <div className="space-y-4">
             <h3 className="text-lg font-semibold">Shipping Address</h3>
             <FormField name="name" control={form.control} render={({ field }) => (
@@ -103,13 +115,14 @@ export function CheckoutForm() {
             </div>
         </div>
 
+        {/* Payment Details */}
         <div className="space-y-4">
             <h3 className="text-lg font-semibold">Payment Details</h3>
             <FormField name="cardName" control={form.control} render={({ field }) => (
                 <FormItem><FormLabel>Name on Card</FormLabel><FormControl><Input placeholder="John M. Doe" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="cardNumber" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Card Number</FormLabel><FormControl><Input placeholder=".... .... .... ...." {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Card Number</FormLabel><FormControl><Input placeholder="1234123412341234" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField name="cardExpiry" control={form.control} render={({ field }) => (
@@ -121,8 +134,8 @@ export function CheckoutForm() {
             </div>
         </div>
 
-        <Button type="submit" size="lg" className="w-full">
-            <CreditCard className="mr-2" />
+        <Button type="submit" size="lg" className="w-full bg-black text-white hover:bg-gray-800">
+            <CreditCard className="mr-2 h-4 w-4" />
             Place Order
         </Button>
       </form>

@@ -1,89 +1,105 @@
-'use client';
+"use client";
 
-import { useCart } from '@/context/cart-context';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useCart, CartItem } from "@/context/CartContext";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const { cartItems, cartCount, totalPrice, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart } = useCart();
+  const [isClient, setIsClient] = useState(false);
+
+  // 1. FIX HYDRATION: Only render the cart content after the component mounts in the browser
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Show a loading state until the client is ready
+  if (!isClient) return <div className="container mx-auto p-8 text-[10px] uppercase tracking-widest">Loading...</div>;
+
+  // 2. CALCULATE TOTALS
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-16">
-      <h1 className="text-4xl md:text-5xl font-headline mb-8">Your Cart</h1>
+    <div className="container mx-auto px-4 py-12 max-w-6xl min-h-screen bg-white">
+      <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-12">Your Cart</h1>
       
-      {cartCount > 0 ? (
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            {cartItems.map(item => (
-              <Card key={item.id}>
-                <CardContent className="p-4 flex items-start gap-4">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={100}
-                    height={100}
-                    className="rounded-md object-cover"
-                  />
-                  <div className="flex-grow">
-                    <h2 className="font-semibold text-lg">{item.name}</h2>
-                    {item.size && <p className="text-sm text-muted-foreground">Size: {item.size}</p>}
-                    {item.style && <p className="text-sm text-muted-foreground">Style: {item.style}</p>}
-                    {item.colors && item.colors.length > 0 && <p className="text-sm text-muted-foreground">Colors: {item.colors.join(', ')}</p>}
-                    
-                    <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center gap-2">
-                            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</Button>
-                            <span className="w-10 text-center font-semibold">{item.quantity}</span>
-                            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</Button>
-                        </div>
-                        <p className="font-bold text-lg">${(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-muted-foreground self-start" onClick={() => removeFromCart(item.id)}>
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>Free</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-bold text-xl">
-                  <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
-                </div>
-                <Button asChild size="lg" className="w-full">
-                  <Link href="/checkout">Proceed to Checkout</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+      {cartItems.length === 0 ? (
+        <div className="py-20 text-center border border-dashed rounded-2xl">
+          <p className="text-gray-400 text-sm uppercase tracking-widest mb-6">Your cart is currently empty.</p>
+          <Link href="/products" className="bg-black text-white px-8 py-4 text-[10px] font-bold uppercase tracking-widest">
+            Back to Products
+          </Link>
         </div>
       ) : (
-        <div className="text-center py-16 border-2 border-dashed rounded-lg">
-          <ShoppingCart className="h-20 w-20 text-muted-foreground/50 mx-auto mb-4" />
-          <h2 className="font-semibold text-2xl">Your cart is empty</h2>
-          <p className="text-muted-foreground mt-2">Looks like you haven't added anything to your cart yet.</p>
-          <Button asChild className="mt-6">
-            <Link href="/products">Start Shopping</Link>
-          </Button>
+        <div className="grid md:grid-cols-3 gap-12 lg:gap-20">
+          
+          {/* ITEMS LIST */}
+          <div className="md:col-span-2 space-y-8">
+            {cartItems.map((item: CartItem) => (
+              <div key={item.id} className="flex items-start gap-6 border-b border-gray-100 pb-8 last:border-0">
+                <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50">
+                  <Image 
+                    src={Array.isArray(item.images) ? item.images : item.images} 
+                    alt={item.name} 
+                    fill
+                    className="object-cover"
+                    unoptimized // 3. FIX 504 ERROR: Bypasses local server timeout
+                  />
+                </div>
+                
+                <div className="flex-grow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-black uppercase tracking-tight text-lg leading-tight mb-1">{item.name}</h3>
+                      <p className="text-gray-500 text-sm font-medium">
+                        ₹{item.price.toLocaleString('en-IN')} x {item.quantity}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ORDER SUMMARY (NOW VISIBLE) */}
+          <div className="md:col-span-1">
+            <div className="sticky top-8">
+              <h2 className="text-xl font-black uppercase tracking-tighter mb-8">Order Summary</h2>
+              
+              <div className="space-y-4 mb-10">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-medium">Subtotal</span>
+                  <span className="font-bold">₹{subtotal.toLocaleString('en-IN')}.00</span>
+                </div>
+                
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-medium">Shipping</span>
+                  <span className="text-green-600 text-[10px] font-bold uppercase tracking-widest text-right">
+                    Calculated at <br/> checkout
+                  </span>
+                </div>
+                
+                <div className="border-t border-gray-100 pt-6 mt-6 flex justify-between items-center">
+                  <span className="text-xl font-black uppercase tracking-tighter">Total</span>
+                  <span className="text-xl font-black tracking-tighter">₹{subtotal.toLocaleString('en-IN')}.00</span>
+                </div>
+              </div>
+
+              <Link href="/checkout">
+                <button className="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-xl rounded-sm">
+                  Proceed to Checkout
+                </button>
+              </Link>
+            </div>
+          </div>
+
         </div>
       )}
     </div>

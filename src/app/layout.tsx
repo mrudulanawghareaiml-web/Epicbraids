@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header'; // Your existing Header component
 import Footer from '@/components/layout/footer'; // Your existing Footer component
-import { CartProvider } from '@/context/cart-context';
+import { CartProvider } from '@/context/CartContext';
 
 const poppins = Poppins({
   subsets: ['latin'],

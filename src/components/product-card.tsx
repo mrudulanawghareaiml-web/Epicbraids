@@ -1,55 +1,41 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import type { Product } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
+import Image from "next/image";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-interface ProductCardProps {
-  product: Product;
-}
-
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product }: { product: any }) {
+  // REMOVED: The <Link> wrapper that was here
   return (
-    <Link href={`/products/${product.id}`} className="group">
-      <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-
-        <div className="relative w-full aspect-[3/2] overflow-hidden">
-<Image
-  src={
-    product.images &&
-    Array.isArray(product.images) &&
-    product.images[0]
-      ? product.images[0]
-      : "/logo.png"
-  }
-  alt={product.name}
-  fill
-  unoptimized
-  className="object-cover transition-transform duration-300 group-hover:scale-105"
-/>
-
-        </div>
-
-        <CardContent className="p-4 flex flex-col gap-2">
-          <h3 className="font-medium text-base">
-            {product.name}
-          </h3>
-
-          <p className="text-sm text-gray-500">
+    <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 border-none shadow-none group-hover:shadow-xl group-hover:-translate-y-1">
+      <div className="relative w-full aspect-[3/2] overflow-hidden bg-gray-50">
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        {product.category && (
+          <Badge className="absolute top-3 left-3 bg-black text-white text-[8px] font-bold uppercase tracking-widest rounded-none border-none">
             {product.category}
-          </p>
+          </Badge>
+        )}
+      </div>
 
-          <p className="text-sm text-gray-500 line-clamp-2">
+      <CardContent className="pt-6 flex-grow">
+        <h3 className="text-sm font-bold uppercase tracking-tight text-gray-900 line-clamp-1">
+          {product.name}
+        </h3>
+        {product.description && (
+          <p className="text-[10px] text-gray-500 mt-2 line-clamp-2 italic">
             {product.description}
           </p>
+        )}
+      </CardContent>
 
-          <p className="font-semibold text-lg mt-1">
-  &#8377; {product.price.toFixed(2)}
-</p>
-
-
-        </CardContent>
-
-      </Card>
-    </Link>
+      <CardFooter className="pb-6 pt-0">
+        <p className="text-lg font-black tracking-tighter text-black">
+          ₹ {product.price.toLocaleString('en-IN')}.00
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

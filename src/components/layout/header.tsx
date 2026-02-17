@@ -3,12 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
-  const { items } = useCart();
-  const cartCount = items?.length || 0;
+  const { cartItems } = useCart();
+  const cartCount = cartItems?.length || 0;
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
