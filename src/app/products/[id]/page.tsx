@@ -1,5 +1,6 @@
 "use client";
 
+import { ShieldCheck, CreditCard, Leaf } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -14,7 +15,10 @@ import {
 } from "@/components/ui/carousel";
 import { AddToCartForm } from './add-to-cart-form';
 import BraceletCustomizer from "@/components/bracelet-customizer";
-import { ShieldCheck, CreditCard, Leaf } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useParams } from "next/navigation";
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,52 +29,67 @@ type ProductPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default function ProductDetailPage({ params }: ProductPageProps) {
+
+export default function ProductDetailPage() {
   const [product, setProduct] = useState<any>(null);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'description' | 'shipping'>('description');
   const [loading, setLoading] = useState(true);
+  const [wristSize, setWristSize] = useState<string>('');
+  const [quantity, setQuantity] = useState<number>(1);
+  
+  const params = useParams();
+  const id = params.id as string;
 
-  useEffect(() => {
-    async function loadData() {
-      const resolvedParams = await params;
-      const id = resolvedParams.id;
+ useEffect(() => {
+  async function loadData() {
+    const id = params.id;
 
-      // Fetch Product
-      const { data: b } = await supabase
-        .from("bracelets")
-        .select("*, bracelet_images(image_url)")
-        .eq("Bracelet_id", id)
-        .single();
+    const { data: b } = await supabase
+      .from("bracelets")
+      .select("*, bracelet_images(image_url)")
+      .eq("Bracelet_id", id)
+      .single();
 
-      if (b) {
-        setProduct({
-          id: b.Bracelet_id,
-          name: b.Bracelet_Name,
-          price: b.Price,
-          description: b.Description,
-          category: "Bracelets",
-          images: b.bracelet_images?.map((img: any) => img.image_url) || ["https://placehold.co"]
-        });
-
-        // Fetch Related
-        const { data: r } = await supabase
-          .from("bracelets")
-          .select("*, bracelet_images(image_url)")
-          .neq("Bracelet_id", id)
-          .limit(2);
-
-        setRelatedProducts(r?.map(item => ({
-          id: item.Bracelet_id,
-          name: item.Bracelet_Name,
-          price: item.Price,
-          image: item.bracelet_images?.[0]?.image_url || "https://placehold.co"
-        })) || []);
-      }
+    if (!b) {
       setLoading(false);
+      return;
     }
-    loadData();
-  }, [params]);
+
+    setProduct({
+      id: b.Bracelet_id,
+      name: b.Bracelet_Name,
+      price: b.Price,
+      description: b.Description,
+      category: "Bracelets",
+      images:
+        b.bracelet_images?.map((img: any) => img.image_url) ||
+        ["/placeholder.png"],
+    });
+
+    const { data: r } = await supabase
+      .from("bracelets")
+      .select("*, bracelet_images(image_url)")
+      .neq("Bracelet_id", id)
+      .limit(2);
+
+    const formattedRelated =
+      r?.map((item: any) => ({
+        id: item.Bracelet_id,
+        name: item.Bracelet_Name,
+        price: item.Price,
+        image:
+          item.bracelet_images?.[0]?.image_url || "/placeholder.png",
+      })) || [];
+
+    setRelatedProducts(formattedRelated);
+
+    setLoading(false);
+  }
+
+  loadData();
+}, [params.id]);
+
 
   if (loading) return <div className="p-20 text-center uppercase tracking-widest text-[10px]">Loading EpicBraid...</div>;
   if (!product) notFound();
@@ -103,19 +122,44 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
           <div className="h-1 w-12 bg-black my-8"></div>
           <p className="text-3xl font-black tracking-tighter mb-8">₹ {product.price.toLocaleString('en-IN')}.00</p>
           <div className="text-gray-500 italic text-sm leading-relaxed mb-10"><p>{product.description}</p></div>
+
+          <div className="space-y-2 mb-6">
+            <Label className="font-black uppercase tracking-tighter text-lg">Enter Your Wrist Size(cm)</Label>
+            <input
+              type="number"
+              min={10}
+              max={25}
+              placeholder="e.g. 17"
+              className="w-full border border-gray-300 rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-black text-sm"
+              value={wristSize}
+              onChange={(e) => setWristSize(e.target.value)}
+            />
+          </div>
+
+          <div className="flex items-center gap-6 pt-4 mb-10">
+            <Label className="font-black uppercase tracking-tighter text-lg">Quantity</Label>
+            <div className="flex items-center gap-3">
+              <Button size="icon" variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</Button>
+              <span className="w-8 text-center font-black text-xl">{quantity}</span>
+              <Button size="icon" variant="outline" onClick={() => setQuantity((q: number) => q + 1)}>+</Button>
+            </div>
+          </div>
+
           <div className="mt-4">
             {isCustomizerTemplate ? <BraceletCustomizer selectedStyle={product} /> : <AddToCartForm product={product} />}
           </div>
-          <div className="mt-16 pt-8 border-t border-gray-100 flex gap-12">
+
+          <div className="mt-16 pt-8 border-t border-gray-100 flex gap-8">
             <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
-              <span className="block text-black mb-1">Handmade</span>Original EpicBraid
+              <span className="block text-black mb-1">Handmade</span>Original EpicBraids
             </div>
             <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
               <span className="block text-black mb-1">Shipping</span>Across India
             </div>
           </div>
         </div>
-      </div>
+      </div>    
+
 
       {/* SPECS & BUY IT WITH SECTION */}
       <div className="mt-32 pt-16 border-t border-gray-100">
@@ -188,9 +232,10 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
             </div>
           </div>
 
+       
           {/* RELATED PRODUCTS */}
           <div className="md:w-2/5">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Buy It With</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8">Buy It With</h4>
             <div className="grid grid-cols-2 gap-6">
               {relatedProducts.map((item) => (
                 <Link key={item.id} href={`/products/${item.id}`} className="group block text-center">
@@ -198,7 +243,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
                     <Image src={item.image} alt={item.name} fill unoptimized className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <h3 className="text-[9px] font-bold uppercase tracking-tight mb-1">{item.name}</h3>
-                  <p className="text-[10px] text-gray-400 mb-2">₹{item.price.toLocaleString('en-IN')}.00</p>
+                  <p className="text-[10px] text-gray-400 mb-2">₹{product.price.toLocaleString('en-IN')}.00</p>
                   <span className="text-[9px] font-bold uppercase underline decoration-gray-200">Quick View</span>
                 </Link>
               ))}

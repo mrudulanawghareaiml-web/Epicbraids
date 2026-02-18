@@ -64,7 +64,7 @@ export default function Footer() {
 
             {/* Phone */}
             <a
-              href="tel:+911234567890"
+              href="tel:+91 91759 44 598"
               className="flex items-center gap-2 hover:text-black transition-colors"
             >
               <Phone size={16} />
@@ -74,7 +74,7 @@ export default function Footer() {
             {/* Social Icons */}
             <div className="flex gap-4 pt-2">
               <a
-                href="https://instagram.com/"
+                href="https://www.instagram.com/_epicbraids?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 className="hover:scale-110 transition-transform"
               >

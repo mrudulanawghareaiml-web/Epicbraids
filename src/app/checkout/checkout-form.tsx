@@ -1,5 +1,6 @@
 'use client';
 
+import { supabase } from '@/lib/supabase';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,127 +17,117 @@ import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 
+// 1. Updated Schema (Removed credit card fields since Razorpay handles them)
 const formSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Invalid email address'),
   name: z.string().min(2, 'Name is too short'),
   address: z.string().min(5, 'Address is too short'),
   city: z.string().min(2, 'City is too short'),
   postalCode: z.string().min(4, 'Postal code is too short'),
   country: z.string().min(2, 'Country is too short'),
-  cardName: z.string().min(2, 'Name on card is too short'),
-  cardNumber: z.string().regex(/^\d{16}$/, 'Invalid card number (16 digits)'),
-  cardExpiry: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Invalid format (MM/YY)'),
-  cardCvc: z.string().regex(/^\d{3,4}$/, 'Invalid CVC'),
 });
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { clearCart, cartItems } = useCart(); // clearCart now exists!
+  const { clearCart, cartItems } = useCart();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      name: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      country: '',
-      cardName: '',
-      cardNumber: '',
-      cardExpiry: '',
-      cardCvc: '',
-    },
+    defaultValues: { email: '', name: '', address: '', city: '', postalCode: '', country: '' },
   });
 
+  const { isSubmitting } = form.formState;
+
+  // 2. Finalize Order Logic (Saves to Supabase)
+  const finalizeOrder = async (values: z.infer<typeof formSchema>, paymentId: string) => {
+    const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert([{
+        email: values.email,
+        customer_name: values.name,
+        address: `${values.address}, ${values.city}, ${values.postalCode}, ${values.country}`,
+        total_amount: totalAmount,
+        status: 'paid', // Mark as paid immediately
+      }])
+      .select().single();
+
+    if (orderError) throw orderError;
+
+    const orderItems = cartItems.map((item) => ({
+      order_id: orderData.id,
+      product_id: item.id,
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
+    await supabase.from('order_items').insert(orderItems);
+    clearCart();
+    router.push(`/checkout/success?order=${orderData.id}`);
+  };
+
+  // 3. Main Submit (Opens Razorpay)
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log('Order placed:', { ...values, items: cartItems });
-      
-      toast({
-          title: 'Order Placed!',
-          description: 'Thank you for your purchase. A confirmation has been sent to your email.'
-      });
+      const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-      clearCart(); // Clears the context and localStorage
-      router.push('/checkout/success');
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive'
+      // Create Razorpay Order via your API
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: totalAmount }),
       });
+      const data = await res.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: totalAmount * 100,
+        currency: "INR",
+        name: "My Awesome Store",
+        description: "Order Payment",
+        order_id: data.orderId,
+        handler: async (response: any) => {
+          await finalizeOrder(values, response.razorpay_payment_id);
+        },
+        prefill: { name: values.name, email: values.email },
+        theme: { color: "#000000" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (error: any) {
+      toast({ title: "Payment Failed", description: error.message, variant: "destructive" });
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Contact Info */}
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Contact Information</h3>
-            <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                    <Input placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField control={form.control} name="name" render={({ field }) => (
+            <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="email" render={({ field }) => (
+            <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <div className="md:col-span-2">
+            <FormField control={form.control} name="address" render={({ field }) => (
+              <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+          </div>
         </div>
 
-        {/* Shipping Address */}
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Shipping Address</h3>
-            <FormField name="name" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField name="address" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Address</FormLabel><FormControl><Input placeholder="123 Main St" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField name="city" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="Anytown" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="postalCode" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Postal Code</FormLabel><FormControl><Input placeholder="12345" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="country" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Country</FormLabel><FormControl><Input placeholder="United States" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-            </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-slate-50 p-3 rounded-md">
+          <ShieldCheck className="w-4 h-4 text-green-600" />
+          Payments are securely processed by Razorpay.
         </div>
 
-        {/* Payment Details */}
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Payment Details</h3>
-            <FormField name="cardName" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Name on Card</FormLabel><FormControl><Input placeholder="John M. Doe" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-             <FormField name="cardNumber" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Card Number</FormLabel><FormControl><Input placeholder="1234123412341234" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField name="cardExpiry" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Expiry (MM/YY)</FormLabel><FormControl><Input placeholder="MM/YY" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                 <FormField name="cardCvc" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>CVC</FormLabel><FormControl><Input placeholder="123" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-            </div>
-        </div>
-
-        <Button type="submit" size="lg" className="w-full bg-black text-white hover:bg-gray-800">
-            <CreditCard className="mr-2 h-4 w-4" />
-            Place Order
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Payment...</> : 'Pay Now'}
         </Button>
       </form>
     </Form>
