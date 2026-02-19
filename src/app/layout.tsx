@@ -1,48 +1,61 @@
-import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
-import './globals.css';
-import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
-import Header from '@/components/layout/header'; // Your existing Header component
-import Footer from '@/components/layout/footer'; // Your existing Footer component
-import { CartProvider } from '@/context/CartContext';
+import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
-});
-
-export const metadata: Metadata = {
-  title: 'EpicBraids Online',
-  description: 'Handcrafted braids and customized styles by you.',
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+// 1. Move your UI logic into a sub-component
+function SuccessContent() {
   return (
-    <html lang="en-IN" suppressHydrationWarning className={poppins.variable}>
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased flex flex-col',
-          poppins.className
-        )}
-      >
-        <CartProvider>
-          {/* 1. Header is placed here so it shows on every page */}
-          <Header />
-          
-          {/* 2. The main content (like your Products page) is rendered here */}
-          <main className="flex-grow">{children}</main>
-          
-          {/* 3. Footer is placed here to appear at the bottom of every page */}
-          <Footer />
-        </CartProvider>
-        <Toaster />
-      </body>
-    </html>
+    <div className="container mx-auto px-4 py-8 md:py-16 flex items-center justify-center">
+      <Card className="max-w-lg w-full text-center">
+        <CardHeader>
+          <div className="mx-auto bg-green-100 dark:bg-green-900/50 p-3 rounded-full w-fit">
+            <CheckCircle2 className="h-12 w-12 text-green-500" />
+          </div>
+          <CardTitle className="text-3xl mt-4">
+            Order Confirmed!
+          </CardTitle>
+          <CardDescription className="text-lg">
+            Thank you for your purchase.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            We've received your order and will start processing it right away.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+            <Button asChild size="lg">
+              <Link href="/products">Continue Shopping</Link>
+            </Button>
+
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/account/orders">View My Orders</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// 2. Wrap the exported page in Suspense
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground animate-pulse">Loading order details...</p>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }
