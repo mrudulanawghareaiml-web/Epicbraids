@@ -1,8 +1,3 @@
-"use client";
-
-export const dynamic = "force-dynamic";
-
-import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,12 +8,8 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
-function SuccessContent() {
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get("order");
-
+export default function CheckoutSuccessPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 flex items-center justify-center">
       <Card className="max-w-lg w-full text-center">
@@ -35,17 +26,6 @@ function SuccessContent() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {orderId && (
-            <div className="p-3 bg-muted rounded-md flex flex-col items-center gap-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">
-                Order Reference
-              </span>
-              <code className="text-sm font-mono break-all">
-                {orderId}
-              </code>
-            </div>
-          )}
-
           <p className="text-muted-foreground">
             We've received your order and will start processing it right away.
           </p>
@@ -62,13 +42,5 @@ function SuccessContent() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-export default function CheckoutSuccessPage() {
-  return (
-    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
-      <SuccessContent />
-    </Suspense>
   );
 }
