@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
 import Image from "next/image";
@@ -92,7 +93,7 @@ export default function CheckoutPage() {
 
           if (verifyData.success) {
             clearCart();
-            window.location.href = "/success";
+           window.location.href = "/checkout/success";
           } else {
             alert("Payment verification failed");
           }
