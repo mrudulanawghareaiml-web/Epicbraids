@@ -9,15 +9,13 @@ export default function CartPage() {
   const { cartItems, removeFromCart } = useCart();
   const [isClient, setIsClient] = useState(false);
 
-  // 1. FIX HYDRATION: Only render the cart content after the component mounts in the browser
+  // Fix hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Show a loading state until the client is ready
-  if (!isClient) return <div className="container mx-auto p-8 text-[10px] uppercase tracking-widest">Loading...</div>;
+  if (!isClient) return <div className="container mx-auto p-8 text-[10px] uppercase tracking-widest text-center">Loading Bag...</div>;
 
-  // 2. CALCULATE TOTALS
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
@@ -34,72 +32,82 @@ export default function CartPage() {
       ) : (
         <div className="grid md:grid-cols-3 gap-12 lg:gap-20">
           
-          {/* ITEMS LIST */}
           <div className="md:col-span-2 space-y-8">
-            {cartItems.map((item: CartItem) => (
-              <div key={item.id} className="flex items-start gap-6 border-b border-gray-100 pb-8 last:border-0">
-                <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50">
-                  <Image 
-                    src={Array.isArray(item.images) ? item.images : item.images} 
-                    alt={item.name} 
-                    fill
-                    className="object-cover"
-                    unoptimized // 3. FIX 504 ERROR: Bypasses local server timeout
-                  />
-                </div>
-                
-                <div className="flex-grow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-black uppercase tracking-tight text-lg leading-tight mb-1">{item.name}</h3>
-                      <p className="text-gray-500 text-sm font-medium">
-                        ₹{item.price.toLocaleString('en-IN')} x {item.quantity}
-                      </p>
+            {cartItems.map((item: CartItem) => {
+              // 1. EXTRACT EXACT URL: Standardized to 'image_url' from your Supabase table
+              const finalImage = item.image_url;
+
+              // 2. VALIDATE: Ensure it is a non-empty string for the Image component
+              const hasValidImage = typeof finalImage === "string" && finalImage.trim() !== "";
+
+              return (
+                <div key={item.id} className="flex items-start gap-6 border-b border-gray-100 pb-8 last:border-0">
+                  <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100">
+                    {hasValidImage ? (
+                      <Image 
+                        src={finalImage} 
+                        alt={item.name || "Bracelet"} 
+                        fill
+                        className="object-cover"
+                        unoptimized // Bypasses potential server-side optimization issues with external URLs
+                      />
+                    ) : (
+                      <div className="text-[8px] font-bold text-gray-300 uppercase text-center px-2">
+                        No Image <br/> Available
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-black uppercase tracking-tight text-lg leading-tight mb-1">
+                          {item.name}
+                        </h3>
+                        <p className="text-gray-500 text-sm font-medium">
+                          ₹{item.price.toLocaleString('en-IN')} x {item.quantity}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
-                    >
-                      Remove
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* ORDER SUMMARY (NOW VISIBLE) */}
+          {/* ORDER SUMMARY */}
           <div className="md:col-span-1">
             <div className="sticky top-8">
               <h2 className="text-xl font-black uppercase tracking-tighter mb-8">Order Summary</h2>
-              
               <div className="space-y-4 mb-10">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-500 font-medium">Subtotal</span>
                   <span className="font-bold">₹{subtotal.toLocaleString('en-IN')}.00</span>
                 </div>
-                
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-500 font-medium">Shipping</span>
                   <span className="text-green-600 text-[10px] font-bold uppercase tracking-widest text-right">
                     Calculated at <br/> checkout
                   </span>
                 </div>
-                
                 <div className="border-t border-gray-100 pt-6 mt-6 flex justify-between items-center">
                   <span className="text-xl font-black uppercase tracking-tighter">Total</span>
                   <span className="text-xl font-black tracking-tighter">₹{subtotal.toLocaleString('en-IN')}.00</span>
                 </div>
               </div>
-
               <Link href="/checkout">
-                <button className="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-xl rounded-sm">
+                <button className="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-gray-800 transition-all shadow-xl rounded-sm">
                   Proceed to Checkout
                 </button>
               </Link>
             </div>
           </div>
-
         </div>
       )}
     </div>

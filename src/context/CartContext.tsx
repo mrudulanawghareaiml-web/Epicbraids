@@ -1,25 +1,25 @@
 // src/context/CartContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-// 1. Standardized Interface Name
+// 1. Updated to match your Database column
 export interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  images: string; 
+  images: string | string[];
+  image_url: string; // CHANGED from 'images' to 'image_url'
   category?: string;
   size?: string;
 }
 
-// 2. Updated Context Type to include clearCart
 interface CartContextType {
   cartItems: CartItem[]; 
   addToCart: (product: any) => void;
   removeFromCart: (id: string) => void;
-  clearCart: () => void; // <--- ADDED THIS
+  clearCart: () => void;
   totalPrice: number;
 }
 
@@ -36,6 +36,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
+      // Ensure the product being added has 'image_url'
       return [...prev, { ...product, quantity: 1 }];
     });
   };
@@ -44,7 +45,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
-  // 3. Define the clearCart function logic
   const clearCart = () => {
     setCartItems([]);
   };
@@ -52,7 +52,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    // 4. Added clearCart to the Provider value
     <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, totalPrice }}>
       {children}
     </CartContext.Provider>

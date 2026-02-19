@@ -49,7 +49,7 @@ export default function Header() {
         </Link>
         
         <nav className={cn(
-          "hidden md:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-500",
+          "hidden md:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors duration-500",
           isScrolled ? "text-white/90" : "text-black/90"
         )}>
           <Link href="/products" className="hover:opacity-60 transition-opacity">Products</Link>

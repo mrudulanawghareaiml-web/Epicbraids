@@ -13,7 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { AddToCartForm } from './add-to-cart-form';
+import AddToCartForm from './add-to-cart-form';
 import BraceletCustomizer from "@/components/bracelet-customizer";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -41,55 +41,95 @@ export default function ProductDetailPage() {
   const params = useParams();
   const id = params.id as string;
 
- useEffect(() => {
+useEffect(() => {
   async function loadData() {
-    const id = params.id;
+    setLoading(true);
 
-    const { data: b } = await supabase
+    // 🔹 Try Bracelet First
+    const { data: bracelet } = await supabase
       .from("bracelets")
       .select("*, bracelet_images(image_url)")
       .eq("Bracelet_id", id)
-      .single();
+      .maybeSingle(); // ✅ use maybeSingle
 
-    if (!b) {
+// Inside your useEffect -> loadData function
+if (bracelet) {
+  setProduct({
+    id: bracelet.Bracelet_id,
+    name: bracelet.Bracelet_Name,
+    price: bracelet.Price,
+    description: bracelet.Description,
+    category: "Bracelets",
+    // Ensure both 'images' (for gallery) and 'image_url' (for cart) are set
+    images: bracelet.bracelet_images?.map((img: any) => img.image_url) || ["/placeholder.png"],
+    image_url: bracelet.bracelet_images?.[0]?.image_url || "/placeholder.png", // ✅ ADD THIS LINE
+  });
+
+      // 🔹 Related Bracelets
+      const { data: related } = await supabase
+        .from("bracelets")
+        .select("*, bracelet_images(image_url)")
+        .neq("Bracelet_id", id)
+        .limit(2);
+
+      setRelatedProducts(
+        related?.map((item: any) => ({
+          id: item.Bracelet_id,
+          name: item.Bracelet_Name,
+          price: item.Price,
+          image:
+            item.bracelet_images?.[0]?.image_url || "/placeholder.png",
+        })) || []
+      );
+
       setLoading(false);
       return;
     }
 
-    setProduct({
-      id: b.Bracelet_id,
-      name: b.Bracelet_Name,
-      price: b.Price,
-      description: b.Description,
-      category: "Bracelets",
-      images:
-        b.bracelet_images?.map((img: any) => img.image_url) ||
-        ["/placeholder.png"],
-    });
+    // 🔹 If not bracelet → Try Keychain
+    const { data: keychain } = await supabase
+      .from("Keychain") // ✅ EXACT table name
+      .select("*, keychain_images(image_url)")
+      .eq("Keychain_id", id)
+      .maybeSingle(); // ✅ important
 
-    const { data: r } = await supabase
-      .from("bracelets")
-      .select("*, bracelet_images(image_url)")
-      .neq("Bracelet_id", id)
-      .limit(2);
+   if (keychain) {
+  setProduct({
+    id: keychain.Keychain_id,
+    name: keychain.Keychain_Name,
+    price: keychain.Price,
+    description: keychain.Description,
+    category: "Keychains",
+    images: keychain.keychain_images?.map((img: any) => img.image_url) || ["/placeholder.png"],
+    image_url: keychain.keychain_images?.[0]?.image_url || "/placeholder.png", // ✅ ADD THIS LINE
+  });
 
-    const formattedRelated =
-      r?.map((item: any) => ({
-        id: item.Bracelet_id,
-        name: item.Bracelet_Name,
-        price: item.Price,
-        image:
-          item.bracelet_images?.[0]?.image_url || "/placeholder.png",
-      })) || [];
+      // 🔹 Related Keychains
+      const { data: related } = await supabase
+        .from("Keychain") // ✅ exact table
+        .select("*, keychain_images(image_url)")
+        .neq("Keychain_id", id)
+        .limit(2);
 
-    setRelatedProducts(formattedRelated);
+      setRelatedProducts(
+        related?.map((item: any) => ({
+          id: item.Keychain_id,
+          name: item.Keychain_Name,
+          price: item.Price,
+          image:
+            item.keychain_images?.[0]?.image_url || "/placeholder.png",
+        })) || []
+      );
+
+      setLoading(false);
+      return;
+    }
 
     setLoading(false);
   }
 
   loadData();
-}, [params.id]);
-
+}, [id]);
 
   if (loading) return <div className="p-20 text-center uppercase tracking-widest text-[10px]">Loading EpicBraid...</div>;
   if (!product) notFound();
@@ -123,31 +163,47 @@ export default function ProductDetailPage() {
           <p className="text-3xl font-black tracking-tighter mb-8">₹ {product.price.toLocaleString('en-IN')}.00</p>
           <div className="text-gray-500 italic text-sm leading-relaxed mb-10"><p>{product.description}</p></div>
 
-          <div className="space-y-2 mb-6">
-            <Label className="font-black uppercase tracking-tighter text-lg">Enter Your Wrist Size(cm)</Label>
-            <input
-              type="number"
-              min={10}
-              max={25}
-              placeholder="e.g. 17"
-              className="w-full border border-gray-300 rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-black text-sm"
-              value={wristSize}
-              onChange={(e) => setWristSize(e.target.value)}
-            />
-          </div>
+          {/* Wrist Size ONLY for Bracelets */}
+{product.category === "Bracelets" && (
+  <div className="space-y-2 mb-6">
+    <Label className="font-black uppercase tracking-tighter text-lg">
+      Enter Your Wrist Size(cm)
+    </Label>
+    <input
+      type="number"
+      min={10}
+      max={25}
+      placeholder="e.g. 17"
+      className="w-full border border-gray-300 rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-black text-sm"
+      value={wristSize}
+      onChange={(e) => setWristSize(e.target.value)}
+    />
+  </div>
+)}
 
-          <div className="flex items-center gap-6 pt-4 mb-10">
-            <Label className="font-black uppercase tracking-tighter text-lg">Quantity</Label>
-            <div className="flex items-center gap-3">
-              <Button size="icon" variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</Button>
-              <span className="w-8 text-center font-black text-xl">{quantity}</span>
-              <Button size="icon" variant="outline" onClick={() => setQuantity((q: number) => q + 1)}>+</Button>
-            </div>
-          </div>
+<div className="flex items-center gap-6 pt-4 mb-10">
+  <Label className="font-black uppercase tracking-tighter text-lg">
+    Quantity
+  </Label>
+  <div className="flex items-center gap-3">
+    <Button size="icon" variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</Button>
+    <span className="w-8 text-center font-black text-xl">{quantity}</span>
+    <Button size="icon" variant="outline" onClick={() => setQuantity((q: number) => q + 1)}>+</Button>
+  </div>
+</div>
 
-          <div className="mt-4">
-            {isCustomizerTemplate ? <BraceletCustomizer selectedStyle={product} /> : <AddToCartForm product={product} />}
-          </div>
+<div className="mt-4">
+  {isCustomizerTemplate
+    ? <BraceletCustomizer selectedStyle={product} />
+   : (
+  <AddToCartForm
+    product={product}
+    wristSize={product.category === "Bracelets" ? wristSize : undefined}
+    quantity={quantity}
+  />
+)}
+</div>
+
 
           <div className="mt-16 pt-8 border-t border-gray-100 flex gap-8">
             <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
@@ -235,7 +291,7 @@ export default function ProductDetailPage() {
        
           {/* RELATED PRODUCTS */}
           <div className="md:w-2/5">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8">Buy It With</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.1em] mb-8">Buy It With</h4>
             <div className="grid grid-cols-2 gap-6">
               {relatedProducts.map((item) => (
                 <Link key={item.id} href={`/products/${item.id}`} className="group block text-center">

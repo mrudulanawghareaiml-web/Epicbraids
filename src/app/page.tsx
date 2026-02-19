@@ -39,28 +39,28 @@ export default async function Home() {
 
         <div className="relative z-10 max-w-5xl space-y-6">
           <div className="space-y-2">
-            <h1 className="text-4xl md:text-8xl font-bold text-white tracking-[0.1em] uppercase leading-none">
+            <h1 className="text-8xl md:text-8xl font-semibold text-white uppercase leading-none">
               BRACELETS
             </h1>
-            <h2 className="text-l md:text-4xl font-light text-white tracking-[0.2em] uppercase">
+            <h2 className="p-2 text-xl md:text-5xl font-light text-white uppercase">
               THAT TELL YOUR STORY.
             </h2>
           </div>
 
-          <p className="text-sm md:text-lg font-light text-gray-300 max-w-lg mx-auto leading-relaxed italic">
+          <p className="p-1 text-s md:text-lg font-light text-gray-300 max-w-lg mx-auto leading-relaxed italic">
             explore our curated collection of handcrafted bracelets, designed for every occasion.
           </p>
           
           <div className="pt-10 flex flex-row items-center justify-center gap-4 px-4">
             <Link href="/products">
-              <button className="bg-white text-black px-8 md:px-12 py-4 text-[10px] md:text-xs font-poppins font-bold uppercase tracking-[0.2em] hover:bg-gray-200 transition-all rounded-sm shadow-xl">
-                Explore
+              <button className="bg-white text-black px-8 md:px-12 py-4 text-[10px] md:text-xs font-poppins font-bold uppercase tracking-[0.1em] hover:bg-gray-200 transition-all rounded-sm shadow-xl">
+                Explore 
               </button>
             </Link>
             
             <Link href="/customize">
-              <button className="bg-transparent text-white px-8 md:px-12 py-4 text-[10px] md:text-xs font-poppins font-bold uppercase tracking-[0.2em] border border-white/30 hover:bg-white/10 transition-all rounded-sm backdrop-blur-sm">
-                Customize
+              <button className="bg-transparent text-white px-8 md:px-12 py-4 text-[10px] md:text-xs font-poppins font-bold uppercase tracking-[0.1em] border border-white/30 hover:bg-white/10 transition-all rounded-sm backdrop-blur-sm">
+                Customize 
               </button>
             </Link>
           </div>

@@ -40,28 +40,27 @@ export default async function ProductsPage() {
   if (kError) console.error("Keychains fetch error:", kError);
 
   // 3. Format Bracelet Data with unoptimized handling
-  const formattedBracelets = (braceletData ?? []).map((b: any) => ({
-    id: b.Bracelet_id,
-    name: b.Bracelet_Name,
-    price: b.Price,
-    description: b.Description || "Handcrafted custom bracelet.",
-    category: "Bracelets",
-    images: b.bracelet_images?.[0]?.image_url
-      ? [b.bracelet_images[0].image_url]
-      : ["https://placehold.co/600x400"],
-  }));
+const formattedBracelets = (braceletData ?? []).map((b: any) => ({
+  id: b.Bracelet_id,
+  name: b.Bracelet_Name,
+  price: b.Price,
+  description: b.Description || "Handcrafted custom bracelet.",
+  category: "Bracelets",
+  images:
+    b.bracelet_images?.[0]?.image_url ||
+    "https://placehold.co/600x400",
+}));
 
-  // 4. Format Keychain Data with unoptimized handling
-  const formattedKeychains = (keychainData ?? []).map((k: any) => ({
-    id: k.Keychain_id,
-    name: k.Keychain_Name,
-    price: k.Price,
-    description: k.Description || "Handcrafted custom keychain.",
-    category: "Keychains",
-    images: k.keychain_images?.[0]?.image_url
-      ? [k.keychain_images[0].image_url]
-      : ["https://placehold.co/600x400"],
-  }));
+const formattedKeychains = (keychainData ?? []).map((k: any) => ({
+  id: k.Keychain_id,
+  name: k.Keychain_Name,
+  price: k.Price,
+  description: k.Description || "Handcrafted custom keychain.",
+  category: "Keychains",
+  images:
+    k.keychain_images?.[0]?.image_url ||
+    "https://placehold.co/600x400",
+}));
 
   const allProducts = [...formattedBracelets, ...formattedKeychains];
 

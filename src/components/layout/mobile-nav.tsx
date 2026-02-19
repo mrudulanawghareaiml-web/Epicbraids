@@ -39,7 +39,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic">
             BRACELETS
           </h1>
-          <p className="mt-4 text-lg uppercase tracking-[0.3em] font-light">That tell your story.</p>
+          <p className="mt-4 text-lg uppercase tracking-[0.1em] font-light">That tell your story.</p>
           <Link href="/products">
             <button className="mt-8 px-10 py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">
               Shop Collection
