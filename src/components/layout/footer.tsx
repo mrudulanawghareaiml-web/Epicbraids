@@ -59,7 +59,7 @@ export default function Footer() {
               className="flex items-center gap-2 hover:text-black transition-colors"
             >
               <Mail size={16} />
-              epicbraidsforyou@gmail.com
+              epicsbraidsforyou@gmail.com
             </a>
 
             {/* Phone */}
