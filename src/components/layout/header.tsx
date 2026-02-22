@@ -54,8 +54,8 @@ export default function Header() {
         )}>
           <Link href="/products" className="hover:opacity-60 transition-opacity">Products</Link>
           <Link href="/customize" className="hover:opacity-60 transition-opacity">Customize</Link>
-          <Link href="#about" className="hover:opacity-60 transition-opacity">About</Link>
-          <Link href="#contact" className="hover:opacity-60 transition-opacity">Contact</Link>
+          <Link href="/about" className="hover:opacity-60 transition-opacity">About</Link>
+          <Link href="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
         </nav>
 
         <div className="flex items-center">

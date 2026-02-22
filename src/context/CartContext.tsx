@@ -28,18 +28,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const addToCart = (product: any) => {
-    setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      // Ensure the product being added has 'image_url'
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
+ const addToCart = (product: any) => {
+  setCartItems(prev => {
+    const existing = prev.find(item => item.id === product.id);
+
+    if (existing) {
+      return prev.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + product.quantity }
+          : item
+      );
+    }
+
+    return [...prev, { ...product }];
+  });
+};
 
   const removeFromCart = (id: string) => {
     setCartItems(prev => prev.filter(item => item.id !== id));

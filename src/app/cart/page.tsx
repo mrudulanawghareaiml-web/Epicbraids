@@ -34,14 +34,32 @@ export default function CartPage() {
           
           <div className="md:col-span-2 space-y-8">
             {cartItems.map((item: CartItem) => {
-              // 1. EXTRACT EXACT URL: Standardized to 'image_url' from your Supabase table
-              const finalImage = item.image_url;
+             const getImageSrc = () => {
+  if (!item.image_url) return "/placeholder.jpg";
 
-              // 2. VALIDATE: Ensure it is a non-empty string for the Image component
-              const hasValidImage = typeof finalImage === "string" && finalImage.trim() !== "";
+  const imageValue = Array.isArray(item.image_url)
+    ? item.image_url[0]
+    : item.image_url;
+
+  if (typeof imageValue === "string" && imageValue.startsWith("http")) {
+    return imageValue;
+  }
+
+  const projectId = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ?.replace("https://", "")
+    .replace(".supabase.co", "");
+
+  return `https://${projectId}.supabase.co/storage/v1/object/public/products/${imageValue}`;
+};
+
+const finalImage = getImageSrc();
+const hasValidImage = typeof finalImage === "string" && finalImage.trim() !== "";
 
               return (
-                <div key={item.id} className="flex items-start gap-6 border-b border-gray-100 pb-8 last:border-0">
+                <div
+  key={item.id}
+  className="flex items-start gap-6 p-6 border border-gray-200 rounded-2xl shadow-sm bg-white"
+>
                   <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100">
                     {hasValidImage ? (
                       <Image 

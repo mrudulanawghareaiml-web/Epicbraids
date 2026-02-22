@@ -45,7 +45,7 @@
     "firebase": "^11.9.1",
     "genkit": "^1.20.0",
     "lucide-react": "^0.475.0",
-    "next": "15.5.9",
+    "next": "^15.5.12",
     "patch-package": "^8.0.0",
     "razorpay": "^2.9.6",
     "react": "^19.2.1",
@@ -56,14 +56,16 @@
     "resend": "^6.9.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "twilio": "^5.12.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19.2.1",
     "@types/react-dom": "^19.2.1",
+    "@types/twilio": "^3.19.2",
     "cross-env": "^10.1.0",
-    "genkit-cli": "^1.20.0",
+    "genkit-cli": "^0.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "5.9.3"

@@ -196,16 +196,22 @@ export default function CheckoutPage() {
                 <div className="space-y-4 mb-8">
                   {cartItems.map((item) => {
                     const getImageSrc = () => {
-                      if (!item.image_url) return "/placeholder.jpg";
-                      if (item.image_url.startsWith("http"))
-                        return item.image_url;
+  if (!item.image_url) return "/placeholder.jpg";
 
-                      const projectId = process.env.NEXT_PUBLIC_SUPABASE_URL
-                        ?.replace("https://", "")
-                        .replace(".supabase.co", "");
+  const imageValue = Array.isArray(item.image_url)
+    ? item.image_url[0]
+    : item.image_url;
 
-                      return `https://${projectId}.supabase.co/storage/v1/object/public/products/${item.image_url}`;
-                    };
+  if (typeof imageValue === "string" && imageValue.startsWith("http")) {
+    return imageValue;
+  }
+
+  const projectId = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ?.replace("https://", "")
+    .replace(".supabase.co", "");
+
+  return `https://${projectId}.supabase.co/storage/v1/object/public/products/${imageValue}`;
+};
 
                     return (
                       <div key={item.id} className="flex gap-4 items-center">
@@ -219,12 +225,19 @@ export default function CheckoutPage() {
                           />
                         </div>
 
-                        <div className="flex-grow">
-                          <p className="text-sm font-bold">{item.name}</p>
-                          <p className="text-xs text-gray-400">
-                            Qty: {item.quantity}
-                          </p>
-                        </div>
+                         <div className="flex-grow">
+        <p className="text-sm font-bold">{item.name}</p>
+
+        {item.size && (
+          <p className="text-xs text-gray-400">
+            Wrist Size: {item.size} cm
+          </p>
+        )}
+
+        <p className="text-xs text-gray-400">
+          Qty: {item.quantity}
+        </p>
+      </div>
 
                         <p className="font-bold">
                           ₹{item.price * item.quantity}

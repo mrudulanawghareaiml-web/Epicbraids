@@ -163,23 +163,24 @@ if (bracelet) {
           <p className="text-3xl font-black tracking-tighter mb-8">₹ {product.price.toLocaleString('en-IN')}.00</p>
           <div className="text-gray-500 italic text-sm leading-relaxed mb-10"><p>{product.description}</p></div>
 
-          {/* Wrist Size ONLY for Bracelets */}
-{product.category === "Bracelets" && (
-  <div className="space-y-2 mb-6">
-    <Label className="font-black uppercase tracking-tighter text-lg">
-      Enter Your Wrist Size(cm)
-    </Label>
-    <input
-      type="number"
-      min={10}
-      max={25}
-      placeholder="e.g. 17"
-      className="w-full border border-gray-300 rounded-md px-3 py-4 focus:outline-none focus:ring-2 focus:ring-black text-sm"
-      value={wristSize}
-      onChange={(e) => setWristSize(e.target.value)}
-    />
-  </div>
-)}
+                  {/* WRIST SIZE */}
+        <div className="space-y-4 border-t pt-8">
+          <label className="text-[11px] font-black uppercase tracking-widest">
+            Enter Wrist Size (cm)
+          </label>
+<input
+  type="text"
+  value={wristSize}
+  onChange={(e) => setWristSize(e.target.value)}
+  placeholder="e.g. 20"
+  className="w-full border px-4 py-3 mt-2 text-sm"
+/>
+
+          <p className="text-xs text-gray-400">
+            Measure your wrist snugly using a measuring tape.
+          </p>
+        </div>
+
 
 <div className="flex items-center gap-6 pt-4 mb-10">
   <Label className="font-black uppercase tracking-tighter text-lg">

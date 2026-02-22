@@ -39,15 +39,15 @@ export default async function Home() {
 
         <div className="relative z-10 max-w-5xl space-y-6">
           <div className="space-y-2">
-            <h1 className="text-8xl md:text-8xl font-semibold text-white uppercase leading-none">
+            <h1 className="text-7xl md:text-7xl font-semibold text-white uppercase leading-none">
               BRACELETS
             </h1>
-            <h2 className="p-2 text-xl md:text-5xl font-light text-white uppercase">
+            <h2 className="p-2 text-xl md:text-4xl font-light text-white uppercase">
               THAT TELL YOUR STORY.
             </h2>
           </div>
 
-          <p className="p-1 text-s md:text-lg font-light text-gray-300 max-w-lg mx-auto leading-relaxed italic">
+          <p className="p-2 text-s md:text-lg font-light text-gray-300 max-w-lg mx-auto leading-relaxed italic">
             explore our curated collection of handcrafted bracelets, designed for every occasion.
           </p>
           
