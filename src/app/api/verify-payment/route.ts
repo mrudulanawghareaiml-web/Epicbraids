@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false });
     }
 
-    // Save to Supabase
+    // Save Order in Supabase
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -43,25 +43,26 @@ export async function POST(req: Request) {
       },
     ]);
 
-    // Send WhatsApp via Twilio
+    // Twilio WhatsApp Send
     const client = twilio(
       process.env.TWILIO_ACCOUNT_SID!,
       process.env.TWILIO_AUTH_TOKEN!
     );
 
     await client.messages.create({
-      from: "whatsapp:+14155238886",
-      to: "whatsapp:+91XXXXXXXXXX",
+      from: process.env.TWILIO_WHATSAPP_NUMBER!, // whatsapp:+14155238886
+      to: "whatsapp:+91XXXXXXXXXX", // replace with your number
       body: `New Order Received
 
-Name: ${orderData.name}
+Customer: ${orderData.name}
 Phone: ${orderData.phone}
-Total: ₹${orderData.total}`,
+Total: ₹${orderData.total}
+Order ID: ${razorpay_order_id}`,
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
+    console.error("VERIFY ERROR:", error);
     return NextResponse.json({ success: false });
   }
 }

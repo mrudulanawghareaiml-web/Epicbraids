@@ -13,10 +13,28 @@ export default function Contact() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const res = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: form.name,
+      email: form.email,
+      message: form.message,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
     alert("Message sent successfully.");
-  };
+    setForm({ name: "", email: "", message: "" });
+  } else {
+    alert("Failed to send message.");
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-16">
